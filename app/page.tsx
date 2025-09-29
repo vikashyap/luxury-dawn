@@ -8,6 +8,7 @@ export default function HomePage() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [phase, setPhase] = useState(0);
   const [mounted, setMounted] = useState(false);
+  const [hasScrolled, setHasScrolled] = useState(false);
   const shouldReduceMotion = useReducedMotion();
 
   // Ensure component is mounted on client
@@ -24,6 +25,15 @@ export default function HomePage() {
 
     const updatePhase = () => {
       const scrollY = window.scrollY;
+      
+      // Check if user has started scrolling or returned to top
+      if (scrollY > 10 && !hasScrolled) {
+        console.log('🎨 Starting dynamic colors - scrollY:', scrollY);
+        setHasScrolled(true);
+      } else if (scrollY <= 10 && hasScrolled) {
+        console.log('⚫ Returning to black - scrollY:', scrollY);
+        setHasScrolled(false);
+      }
       
       // Only update if scroll position changed (performance optimization)
       if (Math.abs(scrollY - lastScrollY) < 1) {
@@ -54,7 +64,7 @@ export default function HomePage() {
         cancelAnimationFrame(animationId);
       }
     };
-  }, [mounted]);
+  }, [mounted, hasScrolled]);
 
   // Generate dynamic gradient based on phase
   const generateGradient = (phase: number) => {
@@ -181,12 +191,12 @@ export default function HomePage() {
       <div className="fixed inset-0 flex items-center justify-center pointer-events-none">
         <motion.div
           className="text-center px-4"
-          style={{
+          style={mounted ? {
             x: floatingX,
             y: floatingY,
             rotate: floatingRotation,
             scale: floatingScale,
-          }}
+          } : {}}
           transition={mounted ? {
             type: "spring",
             stiffness: 100,
@@ -194,15 +204,15 @@ export default function HomePage() {
           } : undefined}
         >
           <motion.h1 
-            className="text-4xl sm:text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-normal tracking-wide leading-none mb-4 md:mb-6"
+            className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl xl:text-9xl font-bold tracking-wide leading-tight mb-4 md:mb-6 uppercase text-center"
             style={{
-              fontFamily: 'var(--font-playfair-display), "Times New Roman", serif',
-              fontStyle: 'italic',
-              color: textColors.secondary,
-              textShadow: `0 2px 8px ${textColors.secondary}20`,
-              y: textFloatY,
-              x: textFloatX,
-              transition: 'color 0.3s ease-out, text-shadow 0.3s ease-out',
+              fontFamily: '"Bodoni Moda", "Didot", "Times New Roman", Georgia, serif',
+              fontWeight: 'bold',
+              color: hasScrolled ? textColors.secondary : '#000000',
+              textShadow: hasScrolled ? `0 2px 8px ${textColors.secondary}20` : '0 2px 8px rgba(0, 0, 0, 0.2)',
+              y: mounted && hasScrolled ? textFloatY : 0,
+              x: mounted && hasScrolled ? textFloatX : 0,
+              transition: hasScrolled ? 'color 0.5s ease-out, text-shadow 0.5s ease-out' : 'none',
             }}
             initial={mounted ? { opacity: 0, y: 30 } : false}
             animate={mounted ? { opacity: 1, y: 0 } : {}}
@@ -212,20 +222,21 @@ export default function HomePage() {
               delay: 0.2 
             }}
           >
-            Last Days of Summer
+            Last Days of<br />Summer
           </motion.h1>
           
           <motion.p 
-            className="text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-normal tracking-wide leading-relaxed mt-6 md:mt-8"
+            className="text-2xl md:text-3xl lg:text-4xl xl:text-5xl font-light tracking-widest leading-relaxed mt-6 md:mt-8"
             style={{
-              fontFamily: 'var(--font-playfair-display), "Times New Roman", serif',
-              fontStyle: 'italic',
-              color: textColors.secondary,
-              textShadow: `0 2px 8px ${textColors.secondary}20`,
-              y: textFloatY2,
-              x: textFloatX2,
-              rotate: textRotation,
-              transition: 'color 0.3s ease-out, text-shadow 0.3s ease-out',
+              fontFamily: 'var(--font-geist-sans), "Helvetica Neue", Helvetica, Arial, sans-serif',
+              fontWeight: '300',
+              letterSpacing: '0.2em',
+              color: hasScrolled ? textColors.secondary : '#000000',
+              textShadow: hasScrolled ? `0 2px 8px ${textColors.secondary}20` : '0 2px 8px rgba(0, 0, 0, 0.2)',
+              y: mounted && hasScrolled ? textFloatY2 : 0,
+              x: mounted && hasScrolled ? textFloatX2 : 0,
+              rotate: mounted && hasScrolled ? textRotation : 0,
+              transition: hasScrolled ? 'color 0.5s ease-out, text-shadow 0.5s ease-out' : 'none',
             }}
             initial={mounted ? { opacity: 0, y: 20 } : false}
             animate={mounted ? { opacity: 1, y: 0 } : {}}
@@ -250,16 +261,20 @@ export default function HomePage() {
         >
           <div 
             className="w-6 h-10 border-2 rounded-full flex justify-center backdrop-blur-sm"
-            style={{
+            style={mounted ? {
               borderColor: `${textColors.secondary}60`,
               transition: 'border-color 0.3s ease-out',
+            } : {
+              borderColor: 'rgba(194, 65, 12, 0.6)',
             }}
           >
             <motion.div 
               className="w-1 h-3 rounded-full mt-2"
-              style={{
+              style={mounted ? {
                 backgroundColor: `${textColors.secondary}80`,
                 transition: 'background-color 0.3s ease-out',
+              } : {
+                backgroundColor: 'rgba(194, 65, 12, 0.8)',
               }}
               animate={{ y: [0, 12, 0] }}
               transition={{ 
