@@ -3,6 +3,20 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+  
+  /* Infinite scroll gradient phase (0-1) */
+  --phase: 0;
+  
+  /* Golden hour color palette */
+  --dawn: #FFFFFF;
+  --pre-golden: #FFF9F5;
+  --golden: #FFF5E6;
+  --warm-golden: #FFE4B5;
+  --sunset: #FFCC80;
+  --deep-sunset: #FF8A65;
+  
+  /* Smooth cubic easing for luxury feel */
+  --ease-luxury: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 @theme inline {
@@ -19,8 +33,46 @@
   }
 }
 
+/* Smooth scrolling for luxury feel */
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), Arial, Helvetica, sans-serif;
+  overflow-x: hidden;
+}
+
+/* Hide scrollbars for clean experience */
+html {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* Internet Explorer 10+ */
+}
+
+html::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none; /* Chrome, Safari, Opera */
+}
+
+body::-webkit-scrollbar {
+  width: 0;
+  height: 0;
+  display: none;
+}
+
+/* Custom gradient background that responds to scroll phase */
+.gradient-background {
+  background: linear-gradient(
+    180deg,
+    color-mix(in srgb, var(--dawn) calc(100% - var(--phase) * 10%), transparent),
+    color-mix(in srgb, var(--pre-golden) calc(100% - var(--phase) * 15%), transparent),
+    color-mix(in srgb, var(--golden) calc(100% - var(--phase) * 20%), transparent),
+    color-mix(in srgb, var(--warm-golden) calc(100% - var(--phase) * 25%), transparent),
+    color-mix(in srgb, var(--sunset) calc(100% - var(--phase) * 30%), transparent),
+    color-mix(in srgb, var(--deep-sunset) calc(100% - var(--phase) * 35%), transparent)
+  );
+  transition: background 0.1s var(--ease-luxury);
 }
